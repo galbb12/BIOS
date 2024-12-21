@@ -38,8 +38,7 @@ int kmain(void) {
 
     // PIC - Programmable Interrupt Controller
     // IMPORTANT: PIC should be initialized at the end of Kernel's initializations to avoid race conditions!
-    pic_init(PIC1_OFFSET, PIC2_OFFSET);
-    printf("%s PIC\n", LOG_SYM_SUC);
+
 
     // Initialize Kernel Paging:
     // Page Frame Allocator - Manage Physical Memory
@@ -52,16 +51,22 @@ int kmain(void) {
     init_heap(k_ctx, KERNEL_HEAP_START, KERNEL_HEAP_SIZE_PAGES * PAGE_SIZE);
     printf("%s Heap: %p\n", LOG_SYM_SUC, kheap_current);
 
+
+
     // Init PCI
     enumerate_pci();
 
+    
+    // pic_init(PIC1_OFFSET, PIC2_OFFSET);
+    // printf("%s PIC\n", LOG_SYM_SUC);
+
     // Setup AHCI and enumerate Disks
-    enumerate_disks();
+    // enumerate_disks();
 
     cli();
 
     // usermode
-    user_init();
+    // user_init();
     
     while (1) {}
     return 0;

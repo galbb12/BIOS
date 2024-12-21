@@ -199,9 +199,9 @@ run:
 	-drive file=$(FLOPPY_BIN),format=raw,if=floppy \
 	-drive id=disk,file=$(DISK),format=raw,if=none \
 	-device ahci,id=ahci \
-	-device ide-hd,drive=disk,bus=ahci.0
-	# -d int,cpu_reset,in_asm,guest_errors \
-	# -no-reboot -D log.txt
+	-device ide-hd,drive=disk,bus=ahci.0 \
+	-d int,cpu_reset,in_asm,guest_errors \
+	-no-reboot -D log.txt
 
 run_debugger: 
 	qemu-system-x86_64 -m 8G -hda $(FLOPPY_BIN) \
