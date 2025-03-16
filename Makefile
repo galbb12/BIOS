@@ -81,6 +81,7 @@ USER_OBJ := $(patsubst %, $(OBJ_DIR)/%, $(USER_SRC_S:.s=.o)) \
 
 # Disks
 DISK = disk.img
+DISK2 = disk2.img
 MOUNT_POINT = ./fscreate
 
 ### Constants
@@ -133,18 +134,20 @@ $(FLOPPY_BIN): kernel boot user
 # $(DD) if=$(USER_BIN) of=$(DISK) conv=notrunc
 	$(DD) if=build/user.elf of=$(DISK) conv=notrunc # elf
 
+	$(DD) if=/dev/zero of=$(DISK2) count=2048
+
 		# # Create filesystem on disk
-		# mkdir -p $(MOUNT_POINT)
+		mkdir -p $(MOUNT_POINT)
 		
-		# mkfs.ext2 $(DISK)
+		mkfs.ext2 $(DISK2)
 
-		# sudo mount $(DISK) $(MOUNT_POINT)
+		sudo mount $(DISK2) $(MOUNT_POINT)
 
-		# sudo chmod 777 $(MOUNT_POINT)
+		sudo chmod 777 $(MOUNT_POINT)
 
-		# sudo cp $(USER_ELF) $(MOUNT_POINT)/user_prog
+		sudo cp $(USER_ELF) $(MOUNT_POINT)/user_prog
 
-		# sudo umount $(MOUNT_POINT)
+		sudo umount $(MOUNT_POINT)
 
 # Bootloader
 boot: $(BOOT_BIN)
@@ -281,7 +284,9 @@ always:
 # Common QEMU command
 QEMU_CMD = qemu-system-x86_64 -m 8G -hda $(FLOPPY_BIN) \
 	-drive id=disk,file=$(DISK),if=none \
+	-drive id=disk2,file=$(DISK2),if=none \
 	-device ahci,id=ahci  -device ide-hd,drive=disk,bus=ahci.0 \
+	-device ide-hd,drive=disk2,bus=ahci.1 \
 	-d int,cpu_reset \
 	-no-reboot -D log.txt\
 	-monitor stdio \
