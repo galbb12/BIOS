@@ -81,6 +81,7 @@ USER_OBJ := $(patsubst %, $(OBJ_DIR)/%, $(USER_SRC_S:.s=.o)) \
 
 # Disks
 DISK = disk.img
+MOUNT_POINT = ./fscreate
 
 ### Constants
 SHELL := /bin/bash
@@ -125,12 +126,25 @@ $(FLOPPY_BIN): kernel boot user
 	FILE_SIZE=$$(stat -c %s $@); \
 	PADDING=$$(( $(SECTOR_SIZE) - FILE_SIZE % $(SECTOR_SIZE) )); \
 	$(DD) if=/dev/zero of=$@ bs=1 seek=$$FILE_SIZE count=$$PADDING conv=notrunc,fsync; \
-	$(DD) if=/dev/zero of=$@ bs=$(SECTOR_SIZE) seek=$$(($$FILE_SIZE + $$PADDING)) count=2048 conv=notrunc,fsync
+	# $(DD) if=/dev/zero of=$@ bs=$(SECTOR_SIZE) seek=$$(($$FILE_SIZE + $$PADDING)) count=2048 conv=notrunc,fsync
 
 	# Write user code to disk
 	$(DD) if=/dev/zero of=$(DISK) count=2048 # 1MB
-	# $(DD) if=$(USER_BIN) of=$(DISK) conv=notrunc
+# $(DD) if=$(USER_BIN) of=$(DISK) conv=notrunc
 	$(DD) if=build/user.elf of=$(DISK) conv=notrunc # elf
+
+		# # Create filesystem on disk
+		# mkdir -p $(MOUNT_POINT)
+		
+		# mkfs.ext2 $(DISK)
+
+		# sudo mount $(DISK) $(MOUNT_POINT)
+
+		# sudo chmod 777 $(MOUNT_POINT)
+
+		# sudo cp $(USER_ELF) $(MOUNT_POINT)/user_prog
+
+		# sudo umount $(MOUNT_POINT)
 
 # Bootloader
 boot: $(BOOT_BIN)
@@ -273,6 +287,7 @@ QEMU_CMD = qemu-system-x86_64 -m 8G -hda $(FLOPPY_BIN) \
 	-monitor stdio \
 	-machine kernel_irqchip=off
 
+
 ron:
 	echo "Running online..."
 	$(QEMU_CMD) \
@@ -288,12 +303,7 @@ roff:
 	$(QEMU_CMD)
 
 run_debugger: 
-	qemu-system-x86_64 -m 8G -hda $(FLOPPY_BIN) \
-	-drive id=disk,file=$(DISK),if=none \
-	-device ahci,id=ahci  -device ide-hd,drive=disk,bus=ahci.0 \
-	-d int,cpu_reset \
-	-no-reboot -D log_debug.txt -s -S \
-	-monitor stdio
+	sudo $(QEMU_CMD) -s -S
 
 run_debug_bochs:
 	sed 's#$$(FLOPPY_BIN)#$(FLOPPY_BIN)#g' $(BOCHS_CONFIG_ORG) > $(BOCHS_CONFIG) && sync

@@ -36,39 +36,40 @@ int interrupts_ready;
 
 int kmain(void) {
 
-interrupts_ready = false;
-    // TTY - Terminal
-    cli();
-    // ISR - Interrupt Service Routines
-    init_isr_handlers();
-    // printf("%s ISRs\n", LOG_SYM_SUC);
+  interrupts_ready = false;
+  // TTY - Terminal
+  cli();
+  // ISR - Interrupt Service Routines
+  init_isr_handlers();
+  // printf("%s ISRs\n", LOG_SYM_SUC);
 
-    // PIC - Programmable Interrupt Controller
-    // IMPORTANT: PIC should be initialized at the end of Kernel's initializations to avoid race conditions!
-    pic_init(PIC1_OFFSET, PIC2_OFFSET);
-    // printf("%s PIC\n", LOG_SYM_SUC);
+  // PIC - Programmable Interrupt Controller
+  // IMPORTANT: PIC should be initialized at the end of Kernel's initializations
+  // to avoid race conditions!
+  pic_init(PIC1_OFFSET, PIC2_OFFSET);
+  // printf("%s PIC\n", LOG_SYM_SUC);
 
-    // Initialize Kernel Process (Paging, Stack, Heap, etc.)
-    init_kernel_process();
+  // Initialize Kernel Process (Paging, Stack, Heap, etc.)
+  init_kernel_process();
 
-    interrupts_ready = true;
-    
-    sti();
+  interrupts_ready = true;
 
-    terminal_initialize();
-    printf("%s Terminal\n", LOG_SYM_SUC);
+  sti();
 
-    // Init PCI
-    enumerate_pci();
+  terminal_initialize();
+  printf("%s Terminal\n", LOG_SYM_SUC);
 
-    printf("%s PCI\n", LOG_SYM_SUC);
-    print_pci_devices();
+  // Init PCI
+  enumerate_pci();
 
-    // Setup AHCI and enumerate Disks
-    enumerate_disks();
+  printf("%s PCI\n", LOG_SYM_SUC);
+  print_pci_devices();
+
+  // Setup AHCI and enumerate Disks
+  enumerate_disks();
 
     // Init Syscall
-    init_syscall();
+  init_syscall();
 
     init_vfs();
 
@@ -81,10 +82,10 @@ interrupts_ready = false;
     // rtl8139_init();
 
     // usermode
-    user_init();
-    
+  user_init();
+
     while (1) {}
-    return 0;
+  return 0;
 }
 
 void user_init() {
