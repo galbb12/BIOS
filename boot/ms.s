@@ -50,6 +50,8 @@ elevate_lm:
     rdmsr ; Read MSR specified by ecx into edx:eax
     or eax, 1 << 8 ; Enable LME bit in MSR register
     wrmsr ; Write the value in edx:eax to MSR specified by ecx
+
+    cli
     
     ; Enable paging
     mov eax, cr0
@@ -82,4 +84,5 @@ elevate_lm:
         mov rbp, KERNEL_VBASE
         mov rsp, rbp
         
+        sti
         jmp lm

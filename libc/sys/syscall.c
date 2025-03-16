@@ -22,11 +22,13 @@ struct kernel_gs_base kgb = {
 };
 
 void init_syscall() {
+    kgb.kstack = KERNEL_STACK_TOP;
     // Enable syscall/sysret using EFER.SCE
     enable_syscall();
 
     // Set up the syscall entry point
     write_msr(MSR_LSTAR, ((uint64_t)syscall_entry & 0xffffffff), ((uint64_t)syscall_entry >> 32));
+    printf("%d", KERNEL_STACK_TOP);
 
     // Set up KernelGSBase
     write_msr(MSR_KERNEL_GS_BASE, ((uint64_t)&kgb & 0xffffffff), ((uint64_t)&kgb >> 32));

@@ -198,7 +198,7 @@ lm:
     ; Copy kernel from KERNEL_LOAD_ADDR to ~8MB
     mov rsi, KERNEL_LOAD_ADDR
     mov rdi, KERNEL_VBASE
-    mov rcx, (TOTAL_SIZE_IN_SECTORS * sector_size) / 8  ; Total bytes / 8 bytes per move
+    mov rcx, KERNEL_SIZE / 8  ; Total bytes / 8 bytes per move
     rep movsq  ; Copy 64-bit words
     cli
     ; Jump to kernel at ~8MB

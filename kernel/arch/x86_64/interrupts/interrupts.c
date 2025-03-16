@@ -8,8 +8,9 @@ void cli(){
 }
 
 void sti(){
-    if(interrupts_ready)
+    if(interrupts_ready){
         __asm__ volatile ("sti" ::: "memory");
+    }
 }
 
 void qemu_shutdown(void) {

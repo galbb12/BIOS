@@ -50,8 +50,6 @@ void* memset(void*, char, size_t);
 size_t strlen(const char*);
 
 
-int strncmp(const void* aptr, const void* bptr, size_t size);
-
 /**
  * @brief Find the first occurrence of a character in a string
  * 
@@ -60,24 +58,6 @@ int strncmp(const void* aptr, const void* bptr, size_t size);
  * @return char* - pointer to first occurrence
  */
 char *strchr(const char *str, int c);
-
-/**
- * @brief Find the last occurrence of a character in a string
- * 
- * @param str 
- * @param c 
- * @return char* - pointer to last occurrence
- */
-char *strrchr(const char *str, int c);
-
-/**
- * @brief Find the first occurrence of a string in a string
- * 
- * @param str 
- * @param str_to_find 
- * @return char* - pointer to first occurrence
- */
-char* strstr(const char *str, const char *str_to_find);
 
 /**
  * @brief Tokenize a string

@@ -84,19 +84,18 @@ void init_isr_handlers() {
     update_idt();
 }
 
-void isr_handler(const uint64_t isr_num, const uint64_t error_code, registers* regs){
+void isr_handler(uint64_t isr_num, uint64_t error_code, registers* regs){
+    cli(); // Disable interrupts to prevent getting the same interrupt regenerated while handling one 
 
     // Virtual Address Space
     // Save current VAS
-    int cr3_changed = false;
     uint64_t prev_cr3;
     __asm__ volatile (
         "mov %0, cr3"
         : "=r"(prev_cr3) // Output
     );
     // Switch to Kernel Virtual Address Space
-    if (prev_cr3 != (uint64_t) (PML4_KERNEL) && prev_cr3 != (uint64_t) (PML4_BOOT)) {
-        cr3_changed = true;
+    if (prev_cr3 != (uint64_t) (PML4_KERNEL)) {
         flush_tlb();
         invlpg((uint64_t*)get_addr_from_table_indexes(PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM,PML4_RECURSIVE_ENTRY_NUM));
         set_pml4_address((uint64_t*) (PML4_KERNEL));
@@ -109,9 +108,8 @@ void isr_handler(const uint64_t isr_num, const uint64_t error_code, registers* r
         }
     }
     else if (isr_num >= 32) {
-        if (isr_num == IRQ_PIT + PIC1_OFFSET) { // PIT IRQ
+        if (isr_num == IRQ_PIT + PIC1_OFFSET) // PIT IRQ
             pit_handler();
-        }
         else if (isr_num == IRQ_KEYBOARD + PIC1_OFFSET) { // Keyboard IRQ
             unsigned char in = inb(PS2_KEYBOARD_PORT_DATA);
             buffer_put(in);
@@ -134,12 +132,11 @@ void isr_handler(const uint64_t isr_num, const uint64_t error_code, registers* r
         }
     }
 
-    if(cr3_changed) {
-        flush_tlb();
-        invlpg((uint64_t*)get_addr_from_table_indexes(PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM,PML4_RECURSIVE_ENTRY_NUM));
-        set_pml4_address((uint64_t*) (prev_cr3));
-    }
+    flush_tlb();
+    invlpg((uint64_t*)get_addr_from_table_indexes(PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM, PML4_RECURSIVE_ENTRY_NUM,PML4_RECURSIVE_ENTRY_NUM));
+    set_pml4_address((uint64_t*) (prev_cr3));
 
+    sti(); //ReEnable interrupts
 }
 
 

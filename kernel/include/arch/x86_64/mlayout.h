@@ -29,7 +29,9 @@
 #endif
 #ifndef KERNEL_VBASE
 #define KERNEL_VBASE 0x810000 // Kernel binary VA
+
 #endif
+
 #define KERNEL_STACK_TOP KERNEL_VBASE - 0x10
 // #define KERNEL_STACK 0xF000
 

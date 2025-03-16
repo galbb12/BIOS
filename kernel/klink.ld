@@ -7,6 +7,6 @@ SECTIONS
     .entry       : { __entry_start = .;     *(.entry)   }
     .text        : { __text_start = .;      *(.text)    }
     .rodata      : { __rodata_start = .;    *(.rodata)  }
-    .data        : { __data_start = .;      *(.data)    }
-    .bss         : { __bss_start = .;       *(.bss)     }
+    .data        : { __data_start = .;      *(.data)   }
+    .bss         : { __bss_start = .;       *(.bss)      __end = .;  }
 }
